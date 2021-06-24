@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -8,7 +8,21 @@ import Switch from '@material-ui/core/Switch';
 import SearchIcon from '@material-ui/icons/Search';
 import { fade } from '@material-ui/core/styles/colorManipulator'
 import InputBase from '@material-ui/core/InputBase';
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
+import { ThemeContext } from "./context/ThemeContext";
+import { LanguageContext } from "./context/LanguageContext";
 
+const content = {
+    english: {
+        search: 'search',
+        flag: 'EN'
+    },
+    persian: {
+        search: 'جستجو',
+        flag: 'IR'
+    },
+}
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -21,9 +35,11 @@ const useStyles = makeStyles((theme) => ({
     },
     menuButton: {
         marginRight: theme.spacing(2),
+        marginLeft: -12,
+        width: '3rem'
     },
     title: {
-        flexGrow: 1,
+        // flexGrow: 1,
         display: 'none',
         [theme.breakpoints.up('sm')]: {
             display: 'block',
@@ -39,12 +55,12 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 0,
         width: '100%',
         [theme.breakpoints.up('sm')]: {
-            marginLeft: theme.spacing.unit,
+            marginLeft: theme.spacing(1),
             width: 'auto',
         },
     },
-    serchIcon: {
-        width: theme.spacing.unit * 9,
+    searchIcon: {
+        width: theme.spacing(9),
         height: '100%',
         position: 'absolute',
         display: 'flex',
@@ -56,8 +72,8 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
     },
     inputInput: {
-        padding: theme.spacing.unit,
-        paddingLeft: theme.spacing.unit * 10,
+        padding: theme.spacing(1),
+        paddingLeft: theme.spacing(10),
         transition: theme.transitions.create('width'),
         width: '100%',
         [theme.breakpoints.up('sm')]: {
@@ -67,28 +83,45 @@ const useStyles = makeStyles((theme) => ({
             }
         }
     },
+    select: {
+        marginLeft: theme.spacing(2),
+        color: 'white'
+    }
 }));
 
+
+
 export default function Navbar() {
+    const { language, changeLanguage } = useContext(LanguageContext)
+    const { isDarkMode, toggleTheme } = useContext(ThemeContext)
+    const { search, flag } = content[language]
     const classes = useStyles();
     return (
         <div className={classes.root}>
-            <AppBar position="static" color='primary'>
+            <AppBar position="static" color={isDarkMode ? 'default' : 'primary'}>
                 <Toolbar>
                     <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                        <span>menu</span>
+                        <span>{flag}</span>
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
                         App title
                     </Typography>
-                    <Switch />
+                    <Switch onChange={toggleTheme} />
+                    <Select
+                        value={language}
+                        onChange={changeLanguage}
+                        className={classes.select}
+                    >
+                        <MenuItem value='english'>english</MenuItem>
+                        <MenuItem value='persian'>persian</MenuItem>
+                    </Select>
                     <div className={classes.grow} />
                     <div className={classes.search} >
-                        <div className={classes.ssearchIcon}>
+                        <div className={classes.searchIcon}>
                             <SearchIcon />
                         </div>
                         <InputBase
-                            placeholder='search...'
+                            placeholder={`${search}...`}
                             classes={{
                                 root: classes.inputRoot,
                                 input: classes.inputInput
